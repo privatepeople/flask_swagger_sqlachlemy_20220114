@@ -5,4 +5,6 @@ from server import created_app
 
 app = created_app()
 
+# 디버그 모드 => 파이썬 파일을 저장하면 => 서버도 자동 재시작
+
 app.run(host='0.0.0.0')
