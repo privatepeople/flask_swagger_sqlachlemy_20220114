@@ -36,7 +36,7 @@ class Users(db.Model):
             'name': self.name,
             'phone': self.phone,
             'birth_year': self.birth_year,
-            'profile_img_url': self.profile_img_url,
+            'profile_img_url': f"https://s3.ap-northeast-2.amazonaws.com/lsh.python/{self.profile_img_url}" if self.profile_img_url else None, # 프사가 있다면, S3주소로 가공해서. 없다면 None
             'created_at': str(self.created_at),  # SQLAlchemy의 DateTime은 JSON응답 처리 불가. => str으로 변환해서 리턴.
             'retired_at': str(self.retired_at) if self.retired_at else None,
         }
