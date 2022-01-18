@@ -64,6 +64,12 @@ class UserProfileImage(Resource):
             
             # 파일 본문도 따로 저장 => 실제로 S3 경로에 업로드.
             file_body = file.stream.read() # 올려줄 파일
+            
+            # 어떤 버킷에 올려줄건지 설정
+            aws_s3.Bucket(current_app.config['AWS_S3_BUCKET_NAME']).put_object(Key=s3_file_path, Body=file_body)
+            
+            # 이 파일을 누구나 볼 수 있께 public 허용
+            aws_s3.ObjectAcl(current_app.config['AWS_S3_BUCKET_NAME'], s3_file_path).put(ACL='public-read')
         
         return {
             '임시': '사용자 프사 등록 가능'
