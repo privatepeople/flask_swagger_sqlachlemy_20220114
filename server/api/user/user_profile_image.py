@@ -1,4 +1,5 @@
 import boto3
+import time
 
 from flask import current_app
 from flask_restful import Resource, reqparse
@@ -63,6 +64,12 @@ class UserProfileImage(Resource):
             # ex. PC카카오톡 파일 전송 -> 다운로드 : 보낸파일이름은 무시하고, Kakao_?????.jpg 등으로 받아짐.
             
             # 1. 파일 이름 재가공
+            
+            user_email = 'test@test.com'
+            now = round(time.time() * 10000) # 현재 시간을 숫자값으로 표현. 중복을 피하기 위한 요소로 활용
+            
+            new_file_name = f"MySNS_{user_email}_{now}"
+            
             # 2. 확장자 추출
             
             # 최종 경로 => 1,2의 합체 + S3의 폴더
