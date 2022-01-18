@@ -1,13 +1,21 @@
+import boto3
+import time
+import os
+import hashlib # str -> 암호화된 문구로 변경
+
+from flask import current_app
 from flask_restful import Resource, reqparse
 from flask_restful_swagger_2 import swagger
+from werkzeug.datastructures import FileStorage
 
 from server import db
-from server.model import Feeds
+from server.model import Feeds, Users
 
 post_parser = reqparse.RequestParser()
 post_parser.add_argument('user_id', type=int, required=True, location='form')
 post_parser.add_argument('lecture_id', type=int, required=True, location='form')
 post_parser.add_argument('content', type=str, required=True, location='form')
+post_parser.add_argument('feed_images', type=FileStorage, required=False, location='files', action='append')
 
 class Feed(Resource):
     
@@ -60,6 +68,31 @@ class Feed(Resource):
         db.session.commit()
         
         # commit시점 이후에는, DB에 등록 완료 -> new_feed의 id / created_at 등의 자동 등록 데이터도 모두 설정 완료.
+        
+        # 사진 목록을 등록하는 행위는 commit()으로 id값이 확인 가능하게 된 후에 작업하자.
+        
+        # 사진이 첨부되지 않았을 수도 있다. => 확인해보고 올리자.
+        
+        if args['feed_images']: # 사진이 파라미터에 첨부되었나?
+            
+            # 1. 사용자 누구?
+            upload_user = Users.query.filter(Users.id == args['user_id']).first()
+            
+            # 2. AWS 접속 도구
+            aws_s3 = boto3.resource('s3',\
+                aws_access_key_id=current_app.config['AWS_ACCESS_KEY_ID'],\
+                aws_secret_access_key=current_app.config['AWS_SECRET_ACCESS_KEY'])
+            
+            for image in args['feed_images']:
+                # 첨부된 사진들을 AWS S3에 올려주기.
+                
+                # 1. 파일이름 (중복회피) 재가공
+                # 사용자id 암호화, 현재시간 숫자로.
+                
+                # 2. AWS S3에 파일 업로드
+                
+                # feed_images 테이블에, 이 게시글의 사진으로 S3사진 주소 등록
+                pass
         
         return {
             'code': 200,
