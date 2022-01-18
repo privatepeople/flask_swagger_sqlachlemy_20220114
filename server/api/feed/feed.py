@@ -1,3 +1,5 @@
+from fileinput import filename
+from posixpath import splitext
 import boto3
 import time
 import os
@@ -88,12 +90,26 @@ class Feed(Resource):
                 
                 # 1. 파일이름 (중복회피) 재가공
                 # 사용자id 암호화, 현재시간 숫자로.
-                s3_file_name = f"images/feed_images/MySNS_{사용자id암호화}_{현재시간숫자}{.확장자}"
+                
+                _, file_extension = os.path.splitext(image, filename)
+                
+                s3_file_name = f"images/feed_images/MySNS_{hashlib.md5(upload_user.email.encode('utf8')).hexdigest()}_{round(time.time() * 10000)}{file_extension}"
                 
                 # 2. AWS S3에 파일 업로드
+                image_body = image.stream.body()
+                
+                aws_s3\
+                    .Bucket(current_app.config['AWS_S3_BUCKET_NAME'])\
+                    .put_object(Key=s3_file_name, Body=image_body)
+                
+                aws_s3\
+                    .ObjectAcl(current_app.config['AWS_S3_BUCKET_NAME'], s3_file_name)\
+                    .put(ACL = 'public-read')
                 
                 # feed_images 테이블에, 이 게시글의 사진으로 S3사진 주소 등록
-                pass
+                
+                
+                
         
         return {
             'code': 200,
