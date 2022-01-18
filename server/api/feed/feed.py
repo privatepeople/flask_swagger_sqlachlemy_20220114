@@ -93,7 +93,10 @@ class Feed(Resource):
                 
                 _, file_extension = os.path.splitext(image, filename)
                 
-                s3_file_name = f"images/feed_images/MySNS_{hashlib.md5(upload_user.email.encode('utf8')).hexdigest()}_{round(time.time() * 10000)}{file_extension}"
+                encrypted_user_email = hashlib.md5(upload_user.email.encode('utf8')).hexdigest()
+                now_number = round(time.time() * 10000)
+                
+                s3_file_name = f"images/feed_images/MySNS_{encrypted_user_email}_{now_number}{file_extension}"
                 
                 # 2. AWS S3에 파일 업로드
                 image_body = image.stream.body()
