@@ -7,13 +7,13 @@ from flask_sqlalchemy import SQLAlchemy
 # DB 연결 전담 변수를 만들고 => import로 찾아다 쓸 수 있게 세팅.
 db = SQLAlchemy()
 
-def created_app(config_name):
+def create_app(config_name):
     app = Flask(__name__)
     
     # 만들어진 앱에, (server>config>환경클래스) 환경설정 불러오기.
     app.config.from_object(f'server.config.{config_name}')
     
-    # SQL Alchemy 세팅 진행 => 플라스크에 해둔 세팅값(환경설정 값)을 불러다가 활용.
+    # SQL Alchemy 세팅 진행 => 플라스크에 해둔 세팅값 (환경설정 값) 을 불러다가 활용.
     db.init_app(app)
     
     # 클래스 > 함수들을 자동으로 기능으로 연결해주는 라이브러리 세팅, 부가 환경설정도 진행.
@@ -21,10 +21,12 @@ def created_app(config_name):
     
     from server.api.user import User
     from server.api.lecture import Lecture
+    from server.api.feed import Feed
     
     # api폴더에서 만든 User 클래스를 가져다가 => /user로 접속 가능하게 등록.
     api.add_resource(User, '/user')
     api.add_resource(Lecture, '/lecture')
+    api.add_resource(Feed, '/feed')
     
     # swagger 문서를 자동 생성
     

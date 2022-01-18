@@ -10,7 +10,7 @@ class Config(object):
     # SQLAlchemy가 접속할 DB 연결 정보(URL)
     # SQLAlchemy 라이브러리가, 어떤 변수를 끌어다 쓸지도 미리 지정되어있음. => 변수이름 바꾸면 안됨.
     # SQLALCHEMY_DATABASE_URL = "mysql+pymysql://아이디:비밀번호@DB호스트주소/논리DB이름"
-    SQLALCHEMY_DATABASE_URL = "mysql+pymysql://admin:wpfh1945!!"+\
+    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://admin:wpfh1945!!"+\
         "@lshdatabase.cddsnovvbqm5.ap-northeast-2.rds.amazonaws.com/my_sns_ckj"
         
     # DB 변경 추적 기능 꺼두기
