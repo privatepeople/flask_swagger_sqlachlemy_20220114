@@ -27,7 +27,7 @@ def create_app(config_name):
     api.add_resource(User, '/user')
     api.add_resource(UserProfileImage, '/user/profile')
     api.add_resource(Lecture, '/lecture')
-    api.add_resource(LectureDetail, '/lecture/<int:lecture_id>') # /lecture/숫자 => int로 lecture_id 변수에 담자.
+    api.add_resource(LectureDetail, '/lecture/<int:lecture_id>') # /lecture/숫자를 => int로 lecture_id 변수에 담자.
     api.add_resource(Feed, '/feed')
     
     # swagger 문서를 자동 생성

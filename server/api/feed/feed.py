@@ -1,9 +1,7 @@
-from fileinput import filename
-from posixpath import splitext
 import boto3
 import time
 import os
-import hashlib # str -> 암호화된 문구로 변경
+import hashlib # str -> 암호화된 문구로 변경.
 
 from flask import current_app
 from flask_restful import Resource, reqparse
@@ -11,7 +9,7 @@ from flask_restful_swagger_2 import swagger
 from werkzeug.datastructures import FileStorage
 
 from server import db
-from server.model import Feeds, Users
+from server.model import Feeds, Users, FeedImages
 
 post_parser = reqparse.RequestParser()
 post_parser.add_argument('user_id', type=int, required=True, location='form')
@@ -46,6 +44,14 @@ class Feed(Resource):
                 'type': 'string',
                 'required': True
             },
+            {
+                'name': 'feed_images',
+                'description': '게시글 첨부 사진',
+                'in': 'formData',
+                'type': 'file',
+                'required': False
+            },
+            
         ],
         'responses': {
             '200': {
@@ -75,7 +81,7 @@ class Feed(Resource):
         
         # 사진이 첨부되지 않았을 수도 있다. => 확인해보고 올리자.
         
-        if args['feed_images']: # 사진이 파라미터에 첨부되었나?
+        if args['feed_images']:   # 사진이 파라미터에 첨부되었나?
             
             # 1. 사용자 누구?
             upload_user = Users.query.filter(Users.id == args['user_id']).first()
@@ -91,15 +97,15 @@ class Feed(Resource):
                 # 1. 파일이름 (중복회피) 재가공
                 # 사용자id 암호화, 현재시간 숫자로.
                 
-                _, file_extension = os.path.splitext(image, filename)
+                _, file_extension = os.path.splitext(image.filename)
                 
                 encrypted_user_email = hashlib.md5(upload_user.email.encode('utf8')).hexdigest()
                 now_number = round(time.time() * 10000)
                 
                 s3_file_name = f"images/feed_images/MySNS_{encrypted_user_email}_{now_number}{file_extension}"
                 
-                # 2. AWS S3에 파일 업로드
-                image_body = image.stream.body()
+                # 2. aws s3에 파일 업로드
+                image_body = image.stream.read()
                 
                 aws_s3\
                     .Bucket(current_app.config['AWS_S3_BUCKET_NAME'])\
@@ -107,9 +113,18 @@ class Feed(Resource):
                 
                 aws_s3\
                     .ObjectAcl(current_app.config['AWS_S3_BUCKET_NAME'], s3_file_name)\
-                    .put(ACL = 'public-read')
+                    .put(ACL='public-read')
                 
-                # feed_images 테이블에, 이 게시글의 사진으로 S3사진 주소 등록
+                # feed_images 테이블에, 이 게시글의 사진으로 S3사진 주소 등록.
+                feed_img = FeedImages()
+                feed_img.feed_id = new_feed.id
+                feed_img.img_url = s3_file_name
+                
+                db.session.add(feed_img)
+                
+            # DB에 추가할 객체는 for문 통해 모두 등록 => commit은 for 외부에서 한번에 몰아서.
+            db.session.commit() # 1번 실행마다 DB 서버에 1회 접근 - for 내부 : 반복적으로 DB 서버 접근.
+                
                 
                 
                 

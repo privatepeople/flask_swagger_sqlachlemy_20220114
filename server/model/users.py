@@ -22,7 +22,7 @@ class Users(db.Model):
     
     # cf) Feeds테이블에서, Users로 외래키를 들고 연결 설정함.
     #  Users의 입장에서는 => Feeds테이블에서 본인을 참조하는 row들이 여러개 있을 예정.
-    my_feeds = db.relationship('Feeds')
+    my_feeds = db.relationship('Feeds', backref='writer')
     
     
     # 3. 객체 -> dict로 변환 메쏘드 (JSON 응답 내려주는 용도)
@@ -36,7 +36,7 @@ class Users(db.Model):
             'name': self.name,
             'phone': self.phone,
             'birth_year': self.birth_year,
-            'profile_img_url': f"https://s3.ap-northeast-2.amazonaws.com/lsh.python/{self.profile_img_url}" if self.profile_img_url else None, # 프사가 있다면, S3주소로 가공해서. 없다면 None
+            'profile_img_url': f"https://s3.ap-northeast-2.amazonaws.com/lsh.python/{self.profile_img_url}" if self.profile_img_url else None, # 프사가 있다면, S3주소로 가공해서. 없다면 None.
             'created_at': str(self.created_at),  # SQLAlchemy의 DateTime은 JSON응답 처리 불가. => str으로 변환해서 리턴.
             'retired_at': str(self.retired_at) if self.retired_at else None,
         }
@@ -48,3 +48,4 @@ class Users(db.Model):
         
         
         return data
+    
