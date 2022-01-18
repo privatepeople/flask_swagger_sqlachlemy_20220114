@@ -8,6 +8,7 @@ from flask_restful import Resource, reqparse
 from werkzeug.datastructures import FileStorage # 파라미터로 파일을 받을때 필요한 클래스
 from flask_restful_swagger_2 import swagger
 
+from server import db
 from server.model import Users
 
 put_parser = reqparse.RequestParser()
@@ -87,10 +88,10 @@ class UserProfileImage(Resource):
             # 파일이름 / 확장자 중, 확장자만 변수에 담자
             _, file_extension = os.path.splitext(file.filename) # 원래 올라온 파일명을 => 파일이름/확장자로 분리
             
-            new_file_name = f"{new_file_name}{file_extension}"
+            new_file_name = f"{new_file_name}{file_extension}" # MySNS_123456789_12345.png 등 파일명 변경
             
             # 최종 경로 => 1,2의 합체 + S3의 폴더
-            s3_file_path = f"images/profile_imgs/{new_file_name}" # 올라갈 경로
+            s3_file_path = f"images/profile_imgs/{new_file_name}" # 올라갈 경로 => S3 내부 최종 경로
             
             # 파일 본문도 따로 저장 => 실제로 S3 경로에 업로드.
             file_body = file.stream.read() # 올려줄 파일
@@ -100,6 +101,13 @@ class UserProfileImage(Resource):
             
             # 이 파일을 누구나 볼 수 있께 public 허용
             aws_s3.ObjectAcl(current_app.config['AWS_S3_BUCKET_NAME'], s3_file_path).put(ACL='public-read')
+            
+            # 사용자의 프로필 사진 경로를, s3_file_path로 저장해보자
+            upload_user.profile_img_url = s3_file_path # DB에, 사용자 프사 경로 저장
+            db.session.add(upload_user)
+            db.session.commit()
+        
+        
         
         return {
             'code': '200',
