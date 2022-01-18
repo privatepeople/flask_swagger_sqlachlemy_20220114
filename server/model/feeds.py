@@ -11,8 +11,8 @@ class Feeds(db.Model):
     
     # 외래키로 설정된 관계를 ORM으로 표현해보자.
     writer = db.relationship('Users')
-    
     lecture = db.relationship('Lectures')
+    
     
     def get_data_object(self, need_writer=True):
         data = {
@@ -30,6 +30,5 @@ class Feeds(db.Model):
         
         # 이 글이 어느 강의에 대해 쓰인건지도 첨부.
         data['lecture'] = self.lecture
-        
         
         return data
