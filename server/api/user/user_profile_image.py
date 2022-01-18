@@ -49,8 +49,14 @@ class UserProfileImage(Resource):
         # aws - s3에, 어떤 키 / 비밀키를 들고갈지 세팅
         # 키값들은 -> 환경설정에 저장해둔 값 불러와서 사용
         aws_s3 = boto3.resource('s3',\
-            aws_access_key= current_app.config['AWS_ACCESS_KEY_ID'],\
+            aws_access_key_id= current_app.config['AWS_ACCESS_KEY_ID'],\
             aws_secret_access_key= current_app.config['AWS_SECRET_ACCESS_KEY'])
+        
+        # 파일의 경우 보통 여러장 첨부 가능
+        # args['profile_image'] 는 => list로 구성됨
+        
+        for file in args['profile_image']:
+            print(file)
         
         return {
             '임시': '사용자 프사 등록 가능'
