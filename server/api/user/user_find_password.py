@@ -79,6 +79,11 @@ class UserPasswordFind(Resource):
                 'message': '개인정보가 맞지 않습니다.'
             }, 400
             
+            
+        # 메일전송 api => mailgun.com 사이트 활용
+        # => 도메인 주소 구매 후, 사이트에 세팅까지 마친 후에 활용 가능
+        
+        # 어느 사이트(주소) / 메쏘드 / 파라미터 세가지 세팅. requests 모듈
         
         return {
             'code': 200,
