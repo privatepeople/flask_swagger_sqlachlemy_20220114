@@ -12,9 +12,10 @@ class Feeds(db.Model):
     # ORM으로 관계 표현 (SQLAlchemy)의 정석 => 부모의 입장에서, 자식목록을 갖고있자.
     # backref => 자식 테이블 모델의 입장에서, 본인을 찾아올때 사용할 변수의 이름을 지정.
     feed_images = db.relationship('FeedImages', backref='feed')
+    feed_replies = db.relationship('FeedReplies', backref='feed')
     
     
-    def get_data_object(self, need_writer=True):
+    def get_data_object(self, need_writer=True, need_replies=False):
         data = {
             'id': self.id,
             'user_id': self.user_id,
@@ -24,6 +25,8 @@ class Feeds(db.Model):
             'images': [ fi.get_data_object()  for fi in self.feed_images ]
         }
         
+        if need_replies:
+            data['replies'] = [ reply.get_data_object() for reply in self.feed_replies ]
         
         # 이 글의 작성자가 누군인지 알수 있다면, json을 만들때마다 자동 첨부되면 편하겠다.
         if need_writer:
