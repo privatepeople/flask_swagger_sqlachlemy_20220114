@@ -79,12 +79,12 @@ class UserPasswordFind(Resource):
                 'message': '개인정보가 맞지 않습니다.'
             }, 400
         
+            
+        # 메일에 뭐라고 보내줄건지 내용 작성.
         
-        # 메일에 뭐라고 보내줄건지 내용 작성
+        # 실제 비번을 보내주면 안됨. => 실제 비밀번호 자체를 저장해두면 안됨.
+        # 임시 비밀번호를 랜덤으로 설정 => 새 비밀번호로 update / 메일 발송.
         
-        # 실제 비번을 보내주면 안됨 => 실제 비밀번호 자체를 저장해두면 안됨
-        # 임시 비밀번호를 랜덤으로 설정 => 새 비밀번호로 update / 메일 발송    
-    
         send_content = f"""
         안녕하세요. MySNS입니다.
         비밀번호 안내 드립니다.
@@ -92,7 +92,7 @@ class UserPasswordFind(Resource):
         """
         
         print(send_content)
-        
+            
         # 메일전송 api => mailgun.com 사이트 활용.
         #  => 도메인 주소 구매 후, 사이트에 세팅까지 마친 후에 활용 가능.
         
@@ -107,11 +107,15 @@ class UserPasswordFind(Resource):
             'text': send_content
         }
         
-        requests.post(
+        response = requests.post(
             url= mailgun_url,
             data=email_data,
             auth=('api', current_app.config['MAILGUN_API_KEY'])
         )
+        
+        respJson = response.json()
+        
+        print('메일건 응답 : ', respJson)
             
         return {
             'code': 200,

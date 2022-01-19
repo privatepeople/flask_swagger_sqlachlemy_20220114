@@ -17,7 +17,7 @@ def create_app(config_name):
     db.init_app(app)
     
     # 클래스 > 함수들을 자동으로 기능으로 연결해주는 라이브러리 세팅, 부가 환경설정도 진행.
-    api = Api(app, api_spec_url='/api/spec', title='my_server spec', api_version='0.1', catch_all_404s=True)
+    api = Api(app, api_spec_url='/api/spec', title='MySNS Server 기능 명세', api_version='0.1', catch_all_404s=True)
     
     from server.api.user import User, UserProfileImage, UserEmailFind, UserPasswordFind
     from server.api.lecture import Lecture, LectureDetail
@@ -32,7 +32,6 @@ def create_app(config_name):
     api.add_resource(LectureDetail, '/lecture/<int:lecture_id>') # /lecture/숫자를 => int로 lecture_id 변수에 담자.
     api.add_resource(Feed, '/feed')
     api.add_resource(FeedReply, '/feed/<int:feed_id>/reply')
-    
     
     # swagger 문서를 자동 생성
     

@@ -2,6 +2,7 @@
 from server import db
 
 import datetime
+import hashlib
 
 class Users(db.Model):
     # SQLAlchemy 라이브러리의 Model 클래스 활용.
@@ -49,3 +50,35 @@ class Users(db.Model):
         
         return data
     
+
+    # 비밀번호 암호화 관련 기능들
+    
+    # 코드에서는 사용자.password = 비번값  형태로 사용 지원.
+    # 대입은 가능, 읽기는 불가. => 원문 파악 X
+    @property
+    def password(self):  # 조회 하려는 상황에는 에러 처리.
+        raise AttributeError('password 변수는 쓰기 전용입니다. 조회는 불가합니다.')
+    
+    # password변수에 대입은 허용.
+    @password.setter
+    def password(self, input_password):
+        # password = 대입값  상황에서, 대입값을 input_password에 담아줌.
+        # 비번 원문을 => 암호화 해서 대입.
+        self.password_hashed = self.generate_password_hash(input_password)
+        
+    # 함수 추가 - 비밀번호 원문을 받아서 => 암호화 해주는 함수.
+    def generate_password_hash(self, input_password):
+        
+        # 입력받은 비번을 SHA512 로 변환해보자. (맞추기 어렵다 / 길이가 길게 나옴.)  1차 암호화
+        pre_hashed = hashlib.sha512( input_password.encode('utf8') ).hexdigest()
+        
+        # 1차 암호화된 결과물을 다시 md5 로 변환해보자. hashlib 모듈 활용. 2차 암호화
+        return hashlib.md5( pre_hashed.encode('utf8') ).hexdigest()
+    
+    # 비번 원문을 받아서 => 비밀번호가 맞는 비번인지 암호화된 값 끼리 비교해보는 함수.
+    def verify_password(self, input_password):
+        # 입력된 비번을 => 암호화 해두자.
+        hashed_input_pw = self.generate_password_hash(input_password)
+        
+        # 내 암호화된 비번과 같은가? 비교해보자.
+        return self.password_hashed == hashed_input_pw

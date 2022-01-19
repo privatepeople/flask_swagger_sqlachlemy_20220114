@@ -20,7 +20,7 @@ def encode_token(user):
     # 2. 어떤 비밀키를 섞어서 암호화.
     # 3. 어떤 알고리즘으로 암호화.
     return jwt.encode(
-        {'id': user.id, 'email': user.email, 'password': user.password}, 
+        {'id': user.id, 'email': user.email, 'password': user.password_hashed},  # password변수는 쓰기전용. 실제 DB 기록값 활용으로 변경
         current_app.config['JWT_SECRET'],
         algorithm=current_app.config['JWT_ALGORITHM'],
         )  # 이 실행 결과가 곧바로 토큰 str로 나옴.
