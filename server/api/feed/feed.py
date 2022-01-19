@@ -3,16 +3,16 @@ import time
 import os
 import hashlib # str -> 암호화된 문구로 변경.
 
-from flask import current_app
+from flask import current_app, g
 from flask_restful import Resource, reqparse
 from flask_restful_swagger_2 import swagger
 from werkzeug.datastructures import FileStorage
 
 from server import db
 from server.model import Feeds, Users, FeedImages
+from server.api.utils import token_required
 
 post_parser = reqparse.RequestParser()
-post_parser.add_argument('user_id', type=int, required=True, location='form')
 post_parser.add_argument('lecture_id', type=int, required=True, location='form')
 post_parser.add_argument('content', type=str, required=True, location='form')
 post_parser.add_argument('feed_images', type=FileStorage, required=False, location='files', action='append')
@@ -24,10 +24,10 @@ class Feed(Resource):
         'description': '게시글 등록하기',
         'parameters': [
             {
-                'name': 'user_id',
-                'description': '어느 사용자가 쓴건지',
-                'in': 'formData',
-                'type': 'integer',
+                'name': 'X-Http-Token',
+                'description': '어느 사용자인지를, 토큰으로',
+                'in': 'header',
+                'type': 'string',
                 'required': True
             },
             {
@@ -62,13 +62,15 @@ class Feed(Resource):
             }
         }
     })
+    @token_required
     def post(self):
         """ 게시글 등록하기 """
-        
         args = post_parser.parse_args()
         
+        user = g.user  # 전역변수에 저장된, 토큰에서 뽑아낸 사용자를 변수에 저장.
+        
         new_feed = Feeds()
-        new_feed.user_id = args['user_id']
+        new_feed.user_id = user.id  # 토큰에서 뽑아낸 사용자 (Users 객체) 의 id값.
         new_feed.lecture_id = args['lecture_id']
         new_feed.content = args['content']
         
@@ -83,8 +85,8 @@ class Feed(Resource):
         
         if args['feed_images']:   # 사진이 파라미터에 첨부되었나?
             
-            # 1. 사용자 누구?
-            upload_user = Users.query.filter(Users.id == args['user_id']).first()
+            # 1. 사용자 누구? => 토큰으로 찾아낸 사용자.
+            upload_user = user
             
             # 2. AWS 접속 도구
             aws_s3 = boto3.resource('s3',\
