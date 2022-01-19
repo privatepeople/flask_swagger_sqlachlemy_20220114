@@ -27,6 +27,9 @@ class Config(object):
     
     # 알리고 서버에서 제공하는 API 키
     ALIGO_API_KEY = 'i5m8plmyxhcpwfvty29hbzko2zzgi0nq'
+    
+    # 메일건 서버에서 제공하는 API 키
+    MAILGUN_API_KEY = 'fea70faa6e0b2dff8740427c0b48f05c-7b8c9ba8-41d27327'
 
 
 class ProductionConfig(Config):
