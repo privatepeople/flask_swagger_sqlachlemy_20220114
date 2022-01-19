@@ -12,7 +12,7 @@ class Users(db.Model):
     # 2. 어떤 변수 / 어떤 컬럼 연결 명시 => 변수 이름이 컬럼 이름과 같아야함.
     id = db.Column(db.Integer, primary_key=True)  # id컬럼은, int / 기본키 라고 명시.
     email = db.Column(db.String(50), nullable=False, default='이메일 미입력') # email 컬럼은, 50자 문구, null 불가, 기본값 있다.
-    password = db.Column(db.String(50), nullable=False)
+    password_hashed = db.Column(db.String(32), nullable=False)
     name = db.Column(db.String(20), nullable=False)
     phone = db.Column(db.String(15))  # nullable의 기본값은 null 허용.
     birth_year = db.Column(db.Integer, nullable=False, default=1995)
