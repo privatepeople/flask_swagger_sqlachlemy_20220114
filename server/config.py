@@ -24,6 +24,10 @@ class Config(object):
     # 토큰 발급용 암호화 로직 이름 / 사용할 키값
     JWT_ALGORITHM = 'HS512'
     JWT_SECRET = 'my_strong_key' # 임시 문구. 원하는대로 변경. (타인 노출 되면 안됨)
+    
+    # 알리고 서버에서 제공하는 API 키
+    ALIGO_API_KEY = 'i5m8plmyxhcpwfvty29hbzko2zzgi0nq'
+
 
 class ProductionConfig(Config):
     # 기본 설정 그대로. 실 서버에서도.
