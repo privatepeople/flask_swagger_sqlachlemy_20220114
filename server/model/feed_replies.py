@@ -19,9 +19,7 @@ class FeedReplies(db.Model):
             'user_id': self.user_id,
             'content': self.content,
             'created_at': str(self.created_at),
-            'writer': self.writer.get_data_obejct()
+            'writer': self.writer.get_data_object()
         }
-        
-        print('내 부모 : ', self.feed)
         
         return data
