@@ -3,18 +3,18 @@ import time
 import os
 import hashlib # str -> 암호화된 문구로 변경.
 
-from flask import current_app
+from flask import current_app, g
 from flask_restful import Resource, reqparse
 from werkzeug.datastructures import FileStorage  # 파라미터로 파일을 받을때 필요한 클래스
 from flask_restful_swagger_2 import swagger
 
 from server import db
 from server.model import Users
+from server.api.utils import token_required
 
 put_parser = reqparse.RequestParser()
 # 파일을 받는 파라미터는, FileStorage, files에서, 추가 행동 : append
 put_parser.add_argument('profile_image', type=FileStorage, required=True, location='files', action='append')
-put_parser.add_argument('user_id', type=int, required=True, location='form')
 
 class UserProfileImage(Resource):
     
@@ -23,11 +23,11 @@ class UserProfileImage(Resource):
         'description': '사용자 프로필사진 등록',
         'parameters': [
             {
-                'name': 'user_id',
-                'description': '누구의 프사 등록?',
-                'in': 'formData',
-                'type': 'integer',
-                'required': True
+                'name': 'X-Http-Token',
+                'description': '본인 인증용 토큰',
+                'in': 'header',
+                'type': 'string',
+                'required': True,
             },
             {
                 'name': 'profile_image',
@@ -47,18 +47,13 @@ class UserProfileImage(Resource):
             }
         }
     })
+    @token_required
     def put(self):
         """ 사용자 프로필사진 등록 """
         
         args = put_parser.parse_args()
         
-        upload_user = Users.query.filter(Users.id == args['user_id']).first()
-        
-        if upload_user is None:
-            return {
-                'code': 400,
-                'message': '해당 사용자는 존재하지 않습니다.'
-            }, 400
+        upload_user = g.user
         
         # aws - s3에, 어떤 키 / 비밀키를 들고갈지 세팅.
         # 키값들은 -> 환경설정에 저장해둔 값 불러와서 사용.
