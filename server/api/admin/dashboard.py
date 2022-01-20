@@ -36,16 +36,21 @@ class AdminDashboard(Resource):
         amount_list = [{'lecture_title': row[0], 'amount': int(row[1])} for row in lecture_fee_amount]
 
             
-        # 모든 남성 유저 목록 출력
-        male_users = Users.query.filter(Users.is_male == True).all()
+        # 남성 회원수 / 여성 회원수
+        gender_user_count_list = db.session.query(Users.is_male, db.func.count(Users.id))\
+            .group_by(Users.is_male)\
+            .all()
         
-        print(male_users)
+        gender_user_counts = [ {'is_male': row[0], 'user_count': int(row[1])} for row in gender_user_count_list ]
             
+        print(gender_user_count_list)
+
         return {
             'code': 200,
             'message': '관리자용 각종 통계 api',
             'data': {
                 'live_user_count': users_count,
                 'lecture_amount': amount_list, # 각 강의 별 총합
+                'gender_user_counts': gender_user_counts,
             }
         }
