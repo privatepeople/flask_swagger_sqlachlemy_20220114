@@ -17,6 +17,7 @@ class Users(db.Model):
     name = db.Column(db.String(20), nullable=False)
     phone = db.Column(db.String(15))  # nullable의 기본값은 null 허용.
     birth_year = db.Column(db.Integer, nullable=False, default=1995)
+    is_male = db.Column(db.Boolean, default=False) # 남성/여성을 Bool로 표현
     profile_img_url = db.Column(db.String(200))
     created_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp()) # 일반 datetime.datetiem.now() => 작업 PC 서버의 시간이 기록됨. => DB 현재시간 아님.
     retired_at = db.Column(db.DateTime)
