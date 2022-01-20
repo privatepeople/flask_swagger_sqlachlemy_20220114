@@ -22,6 +22,7 @@ def create_app(config_name):
     from server.api.user import User, UserProfileImage, UserEmailFind, UserPasswordFind
     from server.api.lecture import Lecture, LectureDetail
     from server.api.feed import Feed, FeedReply
+    from server.api.admin import AdminDashboard
     
     # api폴더에서 만든 User 클래스를 가져다가 => /user로 접속 가능하게 등록.
     api.add_resource(User, '/user')
@@ -32,6 +33,7 @@ def create_app(config_name):
     api.add_resource(LectureDetail, '/lecture/<int:lecture_id>') # /lecture/숫자를 => int로 lecture_id 변수에 담자.
     api.add_resource(Feed, '/feed')
     api.add_resource(FeedReply, '/feed/<int:feed_id>/reply')
+    api.add_resource(AdminDashboard, '/admin/dashboard')
     
     # swagger 문서를 자동 생성
     
