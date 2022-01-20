@@ -1,3 +1,4 @@
+from email.policy import default
 from server import db
 
 class Lectures(db.Model):
@@ -6,6 +7,7 @@ class Lectures(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(20), nullable=False)
     campus = db.Column(db.String(20), nullable=False)
+    fee = db.Column(db.Integer, nullable=False, default=0)
     teacher_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     
     teacher = db.relationship('Users') # 강의의 입장에서, 강사를 찾아가자. 가능함.
@@ -20,6 +22,7 @@ class Lectures(db.Model):
             'id': self.id,
             'title': self.title,
             'campus': self.campus,
+            'fee': self.fee,
             'teacher_id': self.teacher_id,
         }
         
