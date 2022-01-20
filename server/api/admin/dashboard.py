@@ -78,6 +78,14 @@ class AdminDashboard(Resource):
                 'date': ten_days_ago.strftime('%Y-%m-%d'),
                 'amount': 0,
             }
+            
+            # 매출이 발생한 날이라면? amount 금액 수정
+            
+            for row in amount_by_date_list:
+                if str(row[0]) == amount_dict['date']:
+                    amount_dict['amount'] = int(row[1])
+            
+            # 응답으로 등록
             date_amounts.append(amount_dict)
 
             # 해당 날짜에서 하루 지난 날로 변경.
