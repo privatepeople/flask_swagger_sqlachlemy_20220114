@@ -1,5 +1,6 @@
 from flask_restful import Resource
 
+from server import db
 from server.model import Users, LectureUser, Lectures
 
 class AdminDashboard(Resource):
@@ -14,15 +15,21 @@ class AdminDashboard(Resource):
             .filter(Users.email != 'retired')\
             .count()
             
-        # 연습 - 자바 강의를 듣는 사람들의 정보 => (ORM) JOIN 활용.
+        # 연습 - 자바 강의의 매출 총액 (집계함수) => (ORM) JOIN 활용.
         
-        java_user_list = Users.query\
+        # query( SELECT 컬럼 선택처럼 여러 항목 가능 )
+        # db.func.집계함수(컬럼) => 집계함수 동작
+        
+        # filter 나열 => JOIN / ON 을 한번에 명시
+        # filter 나열 2 => JOIN이 끝나면, WHERE절처럼 실제 필터 조건
+        
+        java_amount = db.session.query( Lectures.title, db.func.sum(Lectures.fee) )\
+            .filter(Lectures.id == LectureUser.lecture_id)\
             .filter(LectureUser.user_id == Users.id)\
-            .filter(LectureUser.lecture_id == Lectures.id)\
             .filter(Lectures.title == '자바')\
             .all()
         
-        print(java_user_list)
+        print(java_amount)
         
         return {
             'code': 200,
