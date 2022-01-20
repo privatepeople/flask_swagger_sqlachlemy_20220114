@@ -36,8 +36,9 @@ class AdminDashboard(Resource):
         amount_list = [{'lecture_title': row[0], 'amount': int(row[1])} for row in lecture_fee_amount]
 
             
-        # 남성 회원수 / 여성 회원수
+        # 남성 회원수 / 여성 회원수 => 조건 : 탈퇴하지 않은 인원
         gender_user_count_list = db.session.query(Users.is_male, db.func.count(Users.id))\
+            .filter(Users.retired_at == None)\
             .group_by(Users.is_male)\
             .all()
         
