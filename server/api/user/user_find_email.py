@@ -55,21 +55,21 @@ class UserEmailFind(Resource):
         if user is None:
             return {
                 'code': 400,
-                'message': '해당 이름의 사용자는 없습니다'
+                'message': '해당 이름의 사용자는 없습니다.'
             }, 400
-            
+        
         # 이름으로 사용자 검색 성공
-        # 폰번도 비교 => "-"을 모두 삭제하고 나서 비교해보자.
-            
+        # 폰번도 비교. => "-" 을 모두 삭제하고 나서 비교해보자.
+        
         input_phone = args['phone'].replace('-', '')
-        user_phone = user.phone.replace('-', '')
+        user_phone = user.phone.replace('-',  '')
         
         if input_phone != user_phone:
             return {
                 'code': 400,
                 'message': '이름은 맞지만 폰번이 다릅니다.'
             }, 400
-            
+        
             
         # 알리고 사이트의 API에 문자 전송 Request 전송. => requests 모듈 활용
         
@@ -97,21 +97,21 @@ class UserEmailFind(Resource):
         # 응답의 본문이 json으로 올 예정 => json형태로 가공해서 받자.
         respJson = response.json()
         
-        # 결과 코드가 1인게 성공. => 울 ㅣ서버도 200 리턴.
-        # 그 외의 값 => 알리고에서 문제 => 그 내용을 그대로 500으로 리턴
-        # 400 : Bad Request -> 요청 보낸쪽에서 문제.
-        # 403 : 권한 -> 권한 문제
-        # 404 : 해당 주소 기능 없음
-        # 500 : 서버 내부의 문제 (Interer Server Error)
+        # 결과 코드가 1인게 성공. => 우리 서버도 200 리턴.
+        # 그 외의 값 => 알리고에서 문제 => 그 내용을 그대로 500 으로 리턴.
+        #  400 : Bad Request -> 요청 보낸쪽에서 문제.
+        #  403 : 권한 -> 권한 문제
+        #  404 : 해당 주소 기능 없음
+        #  500 : 서버 내부의 문제. (Interer Server Error)
         
         if int(respJson['result_code']) != 1:
             # 정상 전송 실패
             return {
                 'code': 500,
-                'message': respJson['message'] # 알리고에서 애ㅗ 실패했는지는 받은 문구 그대로 리턴.
+                'message': respJson['message']   # 알리고 에서 왜 실패했는지는 받은 문구 그대로 리턴.
             }, 500
         else:
-            # 정상 전송 성공    
+            # 정상 전송 성공
             return {
                 'code': 200,
                 'message': '이메일 찾기 - 문자 전송 완료',

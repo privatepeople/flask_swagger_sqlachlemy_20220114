@@ -9,4 +9,4 @@ class LectureUser(db.Model):
     lecture_id = db.Column(db.Integer, db.ForeignKey('lectures.id'))
     created_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     
-    # dict로 변경해주는 함수 X
+    # dict 로 변경해주는 함수 X
