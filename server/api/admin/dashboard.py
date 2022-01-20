@@ -23,13 +23,15 @@ class AdminDashboard(Resource):
         # filter 나열 => JOIN / ON 을 한번에 명시
         # filter 나열 2 => JOIN이 끝나면, WHERE절처럼 실제 필터 조건
         
-        java_amount = db.session.query( Lectures.title, db.func.sum(Lectures.fee) )\
+        # group_by => 어떤 값을 기준으로 그룹지을지
+        
+        lecture_fee_amount = db.session.query( Lectures.title, db.func.sum(Lectures.fee) )\
             .filter(Lectures.id == LectureUser.lecture_id)\
             .filter(LectureUser.user_id == Users.id)\
-            .filter(Lectures.title == '자바')\
+            .group_by(Lectures.id)\
             .all()
         
-        print(java_amount)
+        print(lecture_fee_amount)
         
         return {
             'code': 200,
