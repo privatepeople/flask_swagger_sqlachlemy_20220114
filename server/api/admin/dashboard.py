@@ -33,15 +33,9 @@ class AdminDashboard(Resource):
         
         # print(lecture_fee_amount) => JSON 응답으로 내려갈 수 없다. 가공 처리
         
-        amount_list = []
-        
-        for row in lecture_fee_amount:
-            amount_list.append({
-                'lecture_title': row[0],
-                'amount': int(row[1]), # db의 합계 => Decimal => int() 로 가공
-            })
+        amount_list = [{'lecture_title': row[0], 'amount': int(row[1])} for row in lecture_fee_amount]
+
             
-        
         return {
             'code': 200,
             'message': '관리자용 각종 통계 api',
